@@ -5,28 +5,15 @@ from PIL import Image
 import gdown
 import os
 
-# -------------------- Page Setup --------------------
+# ---------------- Page Config ----------------
 st.set_page_config(
-    page_title="Maize Leaf Disease Classification (SCLB)",
+    page_title="Maize Leaf Disease Classification Dashboard (SCLB)",
     layout="wide",
-    page_icon="🌽",
 )
 
-st.markdown(
-    """
-    <style>
-        .main-title {font-size: 40px; font-weight: 700; color: #228B22; text-align:center;}
-        .sub-title {font-size: 22px; font-weight: 600; color: #444;}
-        .stTable td {font-size:16px;}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.title("Maize Leaf Disease Classification Dashboard (SCLB)")
 
-st.markdown('<div class="main-title">🌽 Maize Leaf Disease Dashboard</div>', unsafe_allow_html=True)
-st.write("---")
-
-# -------------------- Model Loading --------------------
+# ---------------- Load Model -----------------
 MODEL_FILE_ID = "1SKKWEE_UP8IBDnGGNDB5IdK3PjhEKKC1"
 MODEL_PATH = "sclb_vgg_net16.h5"
 
@@ -40,19 +27,19 @@ def download_and_load_model():
 model = download_and_load_model()
 CLASS_NAMES = ["Unhealthy", "Healthy"]
 
-# -------------------- Layout --------------------
-col1, col2 = st.columns([1.2, 1.4])
+# ---------------- Layout ---------------------
+col1, col2 = st.columns([1, 1])
 
-# ========== Column 1 : Upload & Prediction ==========
+# Left column: Upload & Prediction
 with col1:
-    st.markdown('<div class="sub-title">Upload an Image</div>', unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("Choose a maize leaf image...", type=["jpg", "jpeg", "png"])
+    st.subheader("Upload an Image")
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
-        # Preprocess
+        # Preprocess image
         img = image.resize((224, 224))
         img_array = np.array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
@@ -69,46 +56,38 @@ with col1:
             final_prediction = "Healthy"
             conf_display = f"{(100 - confidence):.2f}%" if predicted_class == "Unhealthy" else f"{confidence:.2f}%"
 
-        st.success(f"**Prediction:** {final_prediction}")
-        st.info(f"**Confidence:** {conf_display}")
+        st.write(f"**Prediction:** {final_prediction}")
+        st.write(f"**Confidence:** {conf_display}")
 
-# ========== Column 2 : Fungicide Advisory ==========
+# Right column: Fungicide Advisory
 with col2:
-    st.markdown('<div class="sub-title">🌱 Southern Corn Leaf Blight – Fungicide Advisory</div>', unsafe_allow_html=True)
+    st.subheader("Southern Corn Leaf Blight (SCLB) – Fungicide Advisory")
 
-    with st.expander("General Guidelines", expanded=True):
-        st.markdown(
-            """
-            • Monitor crop regularly from **knee-high** to **tasseling** stage (most vulnerable).  
-            • Spray based on **disease severity** and **crop stage** for maximum effect.  
-            • Ensure good spray coverage: **500 L water/ha** with knapsack or motorized sprayer.
-            """
-        )
+    st.markdown(
+        """
+        **General Guidelines**
+        * Monitor crop regularly for early symptoms, especially from knee-high stage to tasseling (most vulnerable).
+        * Spray based on **disease severity** and **crop stage** for maximum benefit.
+        * Ensure good spray coverage using **500 L water/ha** with a knapsack or motorized sprayer.
 
-    with st.expander("Severity-Based Spraying", expanded=True):
-        st.markdown(
-            """
-            | Disease Severity (PDI) | Crop Stage | Recommended Spray |
-            |------------------------|-----------|-------------------|
-            | **Low (≤10%)** | Knee-high (30–35 DAS) | Preventive **Carbendazim + Mancozeb** or **Mancozeb** |
-            | **Moderate (10–20%)** | Pre-tasseling (45–55 DAS) | **Azoxystrobin + Cyproconazole** or **Pyraclostrobin + Epoxiconazole** |
-            | **High (>20%)** | Tasseling–grain filling (60–80 DAS) | **Azoxystrobin + Difenoconazole** (best) – repeat after 15–20 days if humid/warm |
-            """
-        )
+        **Severity-Based Spraying**
 
-    with st.expander("Advisory Highlights", expanded=True):
-        st.markdown(
-            """
-            • **First Spray:** At first disease appearance or knee-high stage (whichever is earlier).  
-            • **Second Spray:** Pre-tasseling (45–55 DAS) depending on severity.  
-            • **Third Spray:** Tasseling to grain-filling (60–80 DAS) under high disease pressure.  
-            • **Spray Volume:** 500 L water/ha for good coverage.  
-            • **Rotation:** Rotate fungicides with different **FRAC codes** to prevent resistance.  
-            • **Most Effective:** **Azoxystrobin + Difenoconazole**.  
-              Alternatives: **Azoxystrobin + Cyproconazole**, **Pyraclostrobin + Epoxiconazole**.
-            """
-        )
+        | Disease Severity (PDI) | Crop Stage | Spray Recommendation |
+        |------------------------|-----------|----------------------|
+        | **Low (≤10%)**         | Knee-high (30–35 DAS) | Preventive spray with **Carbendazim + Mancozeb** or **Mancozeb** (if no prior infection). |
+        | **Moderate (10–20%)**  | Pre-tasseling (45–55 DAS) | **Azoxystrobin + Cyproconazole** or **Pyraclostrobin + Epoxiconazole** |
+        | **High (>20%)**        | Tasseling–grain filling (60–80 DAS) | **Azoxystrobin + Difenoconazole** (best). Repeat after 15–20 days if humid/warm. |
 
-st.write("---")
-st.caption("Developed by Anurag • Powered by Streamlit ❤️")
+        **Advisory Highlights**
+        * **First Spray:** At disease appearance or knee-high stage (whichever is earlier).
+        * **Second Spray:** Pre-tasseling stage (45–55 DAS) depending on severity.
+        * **Third Spray:** Tasseling to grain-filling stage (60–80 DAS) under high disease pressure.
+        * **Spray Volume:** 500 L water/ha for good coverage.
+        * **Rotation:** Rotate fungicides with different **FRAC codes** to avoid resistance.
+        * **Most Effective:** **Azoxystrobin + Difenoconazole**; good alternatives include **Azoxystrobin + Cyproconazole** and **Pyraclostrobin + Epoxiconazole**.
+        """
+    )
+
+st.markdown("---")
+st.write("Developed by Anurag using Streamlit ❤️")
 
