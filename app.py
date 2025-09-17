@@ -89,5 +89,9 @@ with col2:
     )
 
 st.markdown("---")
-st.write("Developed by Anurag using Streamlit ❤️")
+st.write("""
+Developed by 
+Anurag Dhole - Researcher at MIT, Manipal
+Dr. Jadesha G - Assistant Professor at GKVK, UAS, Bangalore
+Dr. Deepak D. - Professor at MIT, Manipal""")
 
